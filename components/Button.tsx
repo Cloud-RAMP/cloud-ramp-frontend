@@ -5,9 +5,11 @@ type ButtonProps = {
 };
 
 export default function Button({ label, color = "light", onClick }: ButtonProps) {
-    let buttonClass = "px-3 py-1 border rounded-full shadow-sm cursor-pointer font-semibold";
+       let buttonClass = "px-3 py-1 border rounded-full shadow-sm cursor-pointer font-semibold text-sm antialiased";
     if (color == "dark") {
-        buttonClass += " bg-black text-white border-none"
+        buttonClass += " bg-dark text-white border-none"
+    } else {
+        buttonClass += " border-outline"
     }
 
     return (
