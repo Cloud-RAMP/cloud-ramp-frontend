@@ -26,9 +26,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <link rel="icon" href="https://avatars.githubusercontent.com/u/260287700?s=200&v=4" />
+            <link rel="icon" href="/logo.png" />
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                    <div className="w-[calc(var(--capped-width)+4rem)] h-screen fixed border-x border-outline left-1/2 -translate-x-1/2"></div>
+                    <div className="w-[calc(var(--capped-width)+4rem)] h-screen fixed border-x border-outline left-1/2 -translate-x-1/2 z-[-1]"></div>
                     <Header />
                     <div className="max-w-capped-width mx-auto font-geist-sans">
                         {children}
