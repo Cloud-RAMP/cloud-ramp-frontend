@@ -30,7 +30,7 @@ export default function RootLayout({
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                     <div className="w-[calc(var(--capped-width)+4rem)] h-screen fixed border-x border-outline left-1/2 -translate-x-1/2"></div>
                     <Header />
-                    <div className="max-w-capped-width mx-auto">
+                    <div className="max-w-capped-width mx-auto font-geist-sans">
                         {children}
                     </div>
             </body>

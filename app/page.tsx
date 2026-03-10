@@ -1,13 +1,22 @@
 import VStack from "@/components/layout/VStack"
+import Body from "@/components/text/Body";
 import Heading from "@/components/text/Heading";
 
 export default function Home() {
     return (
-        <div className="flex min-h-screen items-center justify-center font-sans dark:bg-black">
+        <VStack className="min-h-screen font-sans dark:bg-black justify-center" gap="gap-32">
             <VStack>
                 <Heading>Build WebSocket apps, scale fast, remove overhead</Heading>
                 <Heading className="font-bold">CloudRamp</Heading>
             </VStack>
-        </div>
+            <VStack gap="gap-1">
+                <Body>
+                    use cases
+                </Body>
+                <Heading>
+                    Rapidly deploy WebSocket apps without headache
+                </Heading>
+            </VStack>
+        </VStack>
     );
 }
