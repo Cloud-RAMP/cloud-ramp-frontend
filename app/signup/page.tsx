@@ -6,7 +6,7 @@ import HStack from "@/components/layout/HStack";
 import VStack from "@/components/layout/VStack";
 import Heading from "@/components/text/Heading";
 import Image from "next/image";
-import { loginWithGoogle } from "@/firebase/firebase";
+import { loginWithGoogle } from "@/firebase/auth";
 
 export default function Signup() {
     const handleGoogleSignup = async () => {

@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Button from "./Button";
 import HStack from "./layout/HStack";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { loginWithGoogle } from "@/firebase/auth";
 
 export default function Header() {
+    const router = useRouter();
     return (
         <div className="w-full border-b border-outline py-4 px-12 fixed font-sans">
             <div className="max-w-capped-width flex justify-center mx-auto">
@@ -17,10 +22,25 @@ export default function Header() {
                 </HStack>
             </Link>
             <div className="flex-1 flex justify-evenly"></div>
-            <div className="flex gap-2">
-                <Button children="Sign in" />
-                <Button children="Get Started" color="dark" />
-            </div>
+            <HStack>
+                <Button children="Sign in" 
+                    onClick={async () => {
+                        try {
+                            const user = await loginWithGoogle();
+                            console.log("Signed in user: ", user);
+                        } catch (error) {
+                            console.error("Google signup failed: ", error);
+                        }
+                    }}
+                />
+                <Button 
+                    children="Get Started" 
+                    color="dark" 
+                    onClick={() => {
+                        router.push("/signup");
+                    }}
+                />
+            </HStack>
             </div>
         </div>
     );
