@@ -13,7 +13,7 @@ export async function loginWithGoogle() {
         await addUserToFirestore({
             uid: user.uid,
             email: user.email ?? "",
-            name: user.displayName ?? ""
+            name: user.displayName ?? "",
         });
         console.log("User signed in: ", user);
         return user;

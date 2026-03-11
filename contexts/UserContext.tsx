@@ -29,17 +29,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return () => unsubscribe();
     }, []); // Empty dependency array = run once on mount
 
-    return (
-        <UserContext.Provider value={{ user, setUser }}>
-            {children}
-        </UserContext.Provider>
-    );
+    return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 }
 
 export function useUser(): UserContextType {
     const context = useContext(UserContext);
     if (context === undefined) {
-        throw new Error('useUser must be used within a UserProvider');
+        throw new Error("useUser must be used within a UserProvider");
     }
     return context;
 }

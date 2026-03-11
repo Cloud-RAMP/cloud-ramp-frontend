@@ -21,19 +21,13 @@ export default function Signup() {
     return (
         <VStack className="justify-center h-screen" gap="gap-12">
             <VStack>
-                <Heading>
-                    start your CloudRamp journey today
-                </Heading>
-                <Body>
-                    In order to use our services, you must first create an account
-                </Body>
+                <Heading>start your CloudRamp journey today</Heading>
+                <Body>In order to use our services, you must first create an account</Body>
             </VStack>
             <Button onClick={handleGoogleSignup}>
                 <HStack>
                     <Image src="/google_logo.svg" alt="Google logo" width={25} height={25} />
-                    <div>
-                        sign up with google
-                    </div>
+                    <div>sign up with google</div>
                 </HStack>
             </Button>
         </VStack>

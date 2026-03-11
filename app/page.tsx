@@ -1,4 +1,4 @@
-import VStack from "@/components/layout/VStack"
+import VStack from "@/components/layout/VStack";
 import Body from "@/components/text/Body";
 import Heading from "@/components/text/Heading";
 
@@ -10,12 +10,8 @@ export default function Home() {
                 <Heading className="font-bold">CloudRamp</Heading>
             </VStack>
             <VStack gap="gap-1">
-                <Body>
-                    use cases
-                </Body>
-                <Heading>
-                    Rapidly deploy WebSocket apps without headache
-                </Heading>
+                <Body>use cases</Body>
+                <Heading>Rapidly deploy WebSocket apps without headache</Heading>
             </VStack>
         </VStack>
     );

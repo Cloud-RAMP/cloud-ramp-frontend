@@ -1,13 +1,13 @@
 "use client";
 
-import Button from "@/components/Button"
+import Button from "@/components/Button";
 import FileInput from "@/components/form/FileInput";
 import TextInput from "@/components/form/TextInput";
 import PageContainer from "@/components/layout/PageContainer";
 import VStack from "@/components/layout/VStack";
 import Body from "@/components/text/Body";
 import Heading from "@/components/text/Heading";
-import { useState } from "react"
+import { useState } from "react";
 
 export default function Upload() {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -32,32 +32,23 @@ export default function Upload() {
 
     return (
         <PageContainer>
-            <Heading>
-                Upload your code
-            </Heading>
+            <Heading>Upload your code</Heading>
             <Body>
-                If you have a preexisting service with the same name, you will update the currently deployed code.
+                If you have a preexisting service with the same name, you will update the currently
+                deployed code.
             </Body>
             <br />
             <VStack align="left" className="min-w-xl">
-                <TextInput
-                    label="Service name"
-                    value={serviceName}
-                    setValue={setServiceName}
-                />
+                <TextInput label="Service name" value={serviceName} setValue={setServiceName} />
                 <FileInput
                     label="Upload your code"
                     value={uploadedFile}
                     setValue={setUploadedFile}
-
                 />
             </VStack>
-        <Button
-            onClick={onSubmit}
-            color="dark"
-        >
-            submit
-        </Button>
+            <Button onClick={onSubmit} color="dark">
+                submit
+            </Button>
         </PageContainer>
-    )
+    );
 }

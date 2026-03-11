@@ -10,7 +10,7 @@ export default function Dashboard() {
     return (
         <PageContainer>
             probably put navigation to app insights and new app page
-            <Button 
+            <Button
                 color="dark"
                 onClick={() => {
                     router.push("/upload");
