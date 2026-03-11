@@ -1,11 +1,17 @@
 "use client";
 
 import Button from "@/components/Button"
-import VStack from "@/components/layout/VStack"
+import FileInput from "@/components/form/FileInput";
+import TextInput from "@/components/form/TextInput";
+import PageContainer from "@/components/layout/PageContainer";
+import VStack from "@/components/layout/VStack";
+import Body from "@/components/text/Body";
+import Heading from "@/components/text/Heading";
 import { useState } from "react"
 
 export default function Upload() {
-    const [uploadedFile, setUploadedFile] = useState<File | null>();
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [serviceName, setServiceName] = useState("");
 
     async function onSubmit() {
         // if (!uploadedFile) {
@@ -25,23 +31,33 @@ export default function Upload() {
     }
 
     return (
-        <VStack className="justify-center h-screen">
-            upload your code
-            <input 
-                type="file" 
-                className="border border-outline cursor-pointer" 
-                accept=".wasm" 
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    if (event.target.files && event.target.files.length > 0) {
-                        setUploadedFile(event.target.files[0]);
-                    }
-                }}
-            />
-            <Button
-                onClick={onSubmit}
-            >
-                submit
-            </Button>
-        </VStack>
+        <PageContainer>
+            <Heading>
+                Upload your code
+            </Heading>
+            <Body>
+                If you have a preexisting service with the same name, you will update the currently deployed code.
+            </Body>
+            <br />
+            <VStack align="left" className="min-w-xl">
+                <TextInput
+                    label="Service name"
+                    value={serviceName}
+                    setValue={setServiceName}
+                />
+                <FileInput
+                    label="Upload your code"
+                    value={uploadedFile}
+                    setValue={setUploadedFile}
+
+                />
+            </VStack>
+        <Button
+            onClick={onSubmit}
+            color="dark"
+        >
+            submit
+        </Button>
+        </PageContainer>
     )
 }

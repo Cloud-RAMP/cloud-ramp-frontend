@@ -1,7 +1,23 @@
+"use client";
+
+import Button from "@/components/Button";
+import PageContainer from "@/components/layout/PageContainer";
+import { useRouter } from "next/navigation";
+
 export default function Dashboard() {
+    const router = useRouter();
+
     return (
-        <div className="flex min-h-screen items-center justify-center font-sans dark:bg-black">
-            Let them see metrics about their app here. Probably pulled from firestore
-        </div>
+        <PageContainer>
+            probably put navigation to app insights and new app page
+            <Button 
+                color="dark"
+                onClick={() => {
+                    router.push("/upload");
+                }}
+            >
+                Create a new service
+            </Button>
+        </PageContainer>
     );
 }

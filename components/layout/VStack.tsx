@@ -11,7 +11,7 @@ export default function VStack({
   children,
   className = "",
   gap = "gap-4",
-  align = "center"
+  align = "center",
 }: VerticalStackProps) {
   
   const alignClasses = {

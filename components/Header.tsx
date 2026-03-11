@@ -13,7 +13,7 @@ export default function Header() {
     const { user } = useUser();
 
     return (
-        <div className="w-full border-b border-outline py-4 px-12 fixed font-sans">
+        <div className="w-full border-b border-outline py-4 px-12 fixed font-sans z-100 backdrop-blur">
             <div className="max-w-capped-width flex justify-center mx-auto">
             <Link href="/">
                 <HStack className="font-bold text-xl" gap="gap-2">
