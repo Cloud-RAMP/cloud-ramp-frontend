@@ -1,3 +1,5 @@
+"use client";
+
 type VerticalStackProps = {
   children: React.ReactNode;
   className?: string;
