@@ -5,10 +5,13 @@ import Button from "./Button";
 import HStack from "./layout/HStack";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loginWithGoogle } from "@/firebase/auth";
+import { loginWithGoogle, logout } from "@/firebase/auth";
+import { useUser } from "@/contexts/UserContext";
 
 export default function Header() {
     const router = useRouter();
+    const { user } = useUser();
+
     return (
         <div className="w-full border-b border-outline py-4 px-12 fixed font-sans">
             <div className="max-w-capped-width flex justify-center mx-auto">
@@ -23,23 +26,33 @@ export default function Header() {
             </Link>
             <div className="flex-1 flex justify-evenly"></div>
             <HStack>
-                <Button children="Sign in" 
-                    onClick={async () => {
-                        try {
-                            const user = await loginWithGoogle();
-                            console.log("Signed in user: ", user);
-                        } catch (error) {
-                            console.error("Google signup failed: ", error);
-                        }
-                    }}
-                />
-                <Button 
-                    children="Get Started" 
-                    color="dark" 
-                    onClick={() => {
-                        router.push("/signup");
-                    }}
-                />
+                {user ? (
+                    <>
+                        <Button 
+                            children="Dashboard" 
+                            onClick={() => {
+                                router.push("/dashboard");
+                            }}
+                            />
+                        <Button children="Sign out" 
+                            color="dark" 
+                            onClick={logout}
+                        />
+                    </>
+                ) : (
+                <>
+                    <Button children="Sign in" 
+                        onClick={loginWithGoogle}
+                    />
+                    <Button 
+                        children="Get Started" 
+                        color="dark" 
+                        onClick={() => {
+                            router.push("/signup");
+                        }}
+                    />
+                </>
+                )}
             </HStack>
             </div>
         </div>

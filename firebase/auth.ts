@@ -1,9 +1,10 @@
 import { app } from "./firebase";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { addUserToFirestore } from "./firestore";
 
+export const auth = getAuth(app);
+
 export async function loginWithGoogle() {
-    const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
     try {
@@ -18,6 +19,16 @@ export async function loginWithGoogle() {
         return user;
     } catch (error) {
         console.error("Error during Google login: ", error);
+        throw error;
+    }
+}
+
+export async function logout() {
+    try {
+        await signOut(auth);
+        console.log("User signed out");
+    } catch (error) {
+        console.error("Error during sign out:", error);
         throw error;
     }
 }
