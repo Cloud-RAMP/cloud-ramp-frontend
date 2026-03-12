@@ -9,7 +9,7 @@ type TextInputProps = {
 
 export default function TextInput({ label, value, setValue }: TextInputProps) {
     return (
-        <VStack align="left" gap="gap-0" className="w-full">
+        <VStack align="left" gap="gap-1" className="w-full">
             <Label>{label}</Label>
             <input
                 name={label}

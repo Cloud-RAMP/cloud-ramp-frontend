@@ -7,12 +7,15 @@ import VStack from "@/components/layout/VStack";
 import Heading from "@/components/text/Heading";
 import Image from "next/image";
 import { loginWithGoogle } from "@/firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+    const router = useRouter();
+
     const handleGoogleSignup = async () => {
         try {
-            const user = await loginWithGoogle();
-            console.log("Signed in user: ", user);
+            await loginWithGoogle();
+            router.push("/dashboard");
         } catch (error) {
             console.error("Google signup failed: ", error);
         }

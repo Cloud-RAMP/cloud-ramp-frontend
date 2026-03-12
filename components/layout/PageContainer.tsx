@@ -8,5 +8,7 @@ export default function PageContainer({
     children: React.ReactNode;
     className?: string;
 }) {
-    return <VStack className={`justify-center h-screen w-full ${className}`}>{children}</VStack>;
+    return (
+        <VStack className={`justify-center h-screen w-full pt-16 ${className}`}>{children}</VStack>
+    );
 }
