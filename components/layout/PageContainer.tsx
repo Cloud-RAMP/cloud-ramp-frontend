@@ -1,6 +1,12 @@
 import VStack from "./VStack";
 import React from "react";
 
-export default function PageContainer({ children }: { children: React.ReactNode }) {
-    return <VStack className="justify-center h-screen w-full">{children}</VStack>;
+export default function PageContainer({
+    children,
+    className = "",
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return <VStack className={`justify-center h-screen w-full ${className}`}>{children}</VStack>;
 }

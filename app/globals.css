@@ -38,7 +38,7 @@ body {
 }
 
 .circle-bg {
-    background: radial-gradient(circle at 0px 32px, var(--outline) 1.5px, transparent 0);
+    background: radial-gradient(circle at 0px 32px, var(--outline-light) 1.5px, transparent 0);
     background-size: min(48px, 5%) min(48px, 5%);
     background-position: center center;
     background-repeat: repeat;
