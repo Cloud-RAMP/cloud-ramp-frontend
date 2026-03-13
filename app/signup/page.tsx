@@ -8,6 +8,7 @@ import Heading from "@/components/text/Heading";
 import Image from "next/image";
 import { loginWithGoogle } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function Signup() {
     const router = useRouter();
@@ -22,7 +23,7 @@ export default function Signup() {
     };
 
     return (
-        <VStack className="justify-center h-screen" gap="gap-12">
+        <PageContainer className="gap-16 circle-bg">
             <VStack>
                 <Heading>start your CloudRamp journey today</Heading>
                 <Body>In order to use our services, you must first create an account</Body>
@@ -33,6 +34,6 @@ export default function Signup() {
                     <div>sign up with google</div>
                 </HStack>
             </Button>
-        </VStack>
+        </PageContainer>
     );
 }

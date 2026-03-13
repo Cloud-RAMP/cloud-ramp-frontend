@@ -1,21 +1,24 @@
 "use client";
 
 import Button from "@/components/Button";
+import Loader from "@/components/icons/Loader";
 import HStack from "@/components/layout/HStack";
 import PageContainer from "@/components/layout/PageContainer";
 import VStack from "@/components/layout/VStack";
 import Label from "@/components/text/Label";
 import InvalidAuth from "@/components/views/InvalidAuth";
 import { useUser } from "@/contexts/UserContext";
+import { getUserServices } from "@/firebase/firestore";
+import { useServicesQuery } from "@/firebase/queries";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type ServiceItemProps = {
     name: string;
     id: string;
 };
 
-function serviceItem({ name, id }: ServiceItemProps) {
+function ServiceItem({ name, id }: ServiceItemProps) {
     const router = useRouter();
     const [gap, setGap] = useState("gap-2");
 
@@ -38,6 +41,7 @@ function serviceItem({ name, id }: ServiceItemProps) {
 export default function Dashboard() {
     const router = useRouter();
     const { user } = useUser();
+    const { loading, services } = useServicesQuery(user);
 
     if (user == null) {
         return <InvalidAuth />
@@ -45,12 +49,15 @@ export default function Dashboard() {
 
     return (
         <PageContainer>
-            <HStack gap="gap-8">
+            <HStack divided={true} dividerClassName="py-12" gap="gap-8">
                 <VStack align="left">
                     <Label>Your services</Label>
-                    {serviceItem({ name: "testing", id: "testing" })}
+                    {loading ? (
+                        <Loader type="dots" />
+                    ) : services.map((s: any) => 
+                        <ServiceItem name={s.serviceName} id={s.id} key={s.id} />
+                    )}
                 </VStack>
-                <div className="h-full w-px py-12 bg-outline" />
                 <VStack align="left">
                     probably put navigation to app insights and new app page
                     <Button

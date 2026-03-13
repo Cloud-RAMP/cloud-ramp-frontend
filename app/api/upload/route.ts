@@ -18,8 +18,8 @@ export async function doesUserExist(uid: string): Promise<boolean> {
     return !snapshot.empty;
 }
 
-export async function addOrUpdateInstance(instance: {
-    instanceName: string;
+export async function addOrUpdateService(service: {
+    serviceName: string;
     domainName: string;
     ownerId: string;
     lastUpdated: Date;
@@ -27,41 +27,40 @@ export async function addOrUpdateInstance(instance: {
 }) {
     try {
         // query to see if this doc exists already
-        const instancesRef = adminDb.collection("instances");
-        const snapshot = await instancesRef
-            .where("insanceName", "==", instance.instanceName)
-            .where("ownerId", "==", instance.ownerId)
+        const servicesRef = adminDb.collection("services");
+        const snapshot = await servicesRef
+            .where("serviceName", "==", service.serviceName)
+            .where("ownerId", "==", service.ownerId)
             .get();
 
         // doc found
         if (!snapshot.empty) {
             const docRef = snapshot.docs[0].ref;
             await docRef.update({
-                lastUpdated: instance.lastUpdated,
-                blobURL: instance.blobURL,
+                lastUpdated: service.lastUpdated,
+                blobURL: service.blobURL,
             });
             return docRef.id;
         } else {
             // create new doc
-            const docRef = await instancesRef.add({
-                instanceName: instance.instanceName,
-                domainName: instance.domainName,
-                ownerId: instance.ownerId,
-                lastUpdated: instance.lastUpdated,
-                blobURL: instance.blobURL,
+            const docRef = await servicesRef.add({
+                serviceName: service.serviceName,
+                domainName: service.domainName,
+                ownerId: service.ownerId,
+                lastUpdated: service.lastUpdated,
+                blobURL: service.blobURL,
             });
-            console.log("adding to user")
 
-            // add instance id to user's instances array
-            const userRef = adminDb.collection("users").doc(instance.ownerId);
+            // add service id to user's services array
+            const userRef = adminDb.collection("users").doc(service.ownerId);
             await userRef.update({
-                instances: FieldValue.arrayUnion(docRef.id),
+                services: FieldValue.arrayUnion(docRef.id),
             });
 
             return docRef.id;
         }
     } catch (error) {
-        console.error("Error adding/updating instance in Firestore:", error);
+        console.error("Error adding/updating service in Firestore:", error);
         throw error;
     }
 }
@@ -100,8 +99,8 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        await addOrUpdateInstance({
-            instanceName: serviceName,
+        await addOrUpdateService({
+            serviceName: serviceName,
             domainName: "a.cloudramp.com",
             ownerId: uid,
             lastUpdated: new Date(),

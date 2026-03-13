@@ -9,12 +9,14 @@ import Body from "@/components/text/Body";
 import Heading from "@/components/text/Heading";
 import InvalidAuth from "@/components/views/InvalidAuth";
 import { useUser } from "@/contexts/UserContext";
+import { useServicesQuery } from "@/firebase/queries";
 import { useState } from "react";
 
 export default function Upload() {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [serviceName, setServiceName] = useState("");
     const { user } = useUser();
+    const { loading, services } = useServicesQuery(user);
 
     async function onSubmit() {
         if (!uploadedFile || serviceName == "" || user == null) {
@@ -55,7 +57,10 @@ export default function Upload() {
                     label="Service name"
                     value={serviceName}
                     setValue={setServiceName}
-                    options={[]}
+                    options={services.map((s: any) => ({
+                        value: s.serviceName,
+                        label: s.serviceName,
+                    }))}
                 />
                 <FileInput
                     label="Upload your code"

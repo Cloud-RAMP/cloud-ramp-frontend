@@ -13,7 +13,7 @@ export type SelectInputProps = {
 
 export default function SelectInput({ label, value, setValue, options }: SelectInputProps) {
     const [internalValue, setInternalValue] = useState(value)
-    const isNew = internalValue == "__new__" || options.length == 0;
+    const isNew = internalValue == "__new__" || value == "";
 
     return (
         <VStack align="left" gap="gap-1" className="w-full">

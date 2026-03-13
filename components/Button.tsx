@@ -13,7 +13,7 @@ export default function Button({ children, color = "light", className = "", onCl
     if (color == "dark") {
         buttonClass += " bg-dark text-white border-none";
     } else {
-        buttonClass += " border-outline";
+        buttonClass += " border-outline bg-background";
     }
 
     return (
