@@ -14,7 +14,7 @@ export async function loginWithGoogle() {
             uid: user.uid,
             email: user.email ?? "",
             name: user.displayName ?? "",
-            instances: [],
+            services: [],
         });
         console.log("User signed in: ", user);
         return user;
