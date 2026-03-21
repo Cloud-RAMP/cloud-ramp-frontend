@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VStack from "../layout/VStack";
 import Label from "../text/Label";
 
@@ -12,7 +12,12 @@ export type SelectInputProps = {
 };
 
 export default function SelectInput({ label, value, setValue, options }: SelectInputProps) {
-    const [internalValue, setInternalValue] = useState(value)
+    const [internalValue, setInternalValue] = useState(value);
+    useEffect(() => {
+        if (value == "") {
+            setInternalValue("__new__");
+        }
+    }, []);
     const isNew = internalValue == "__new__" || value == "";
 
     return (

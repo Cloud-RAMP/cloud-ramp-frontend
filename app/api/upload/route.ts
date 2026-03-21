@@ -12,52 +12,72 @@ if (!getApps().length) {
 }
 const adminDb = getFirestore();
 
-export async function doesUserExist(uid: string): Promise<boolean> {
+async function doesUserExist(uid: string): Promise<boolean> {
     const usersRef = adminDb.collection("users");
     const snapshot = await usersRef.where("uid", "==", uid).get();
     return !snapshot.empty;
 }
 
-export async function addOrUpdateService(service: {
+// Uploads a blob to vercel and returns the URL.
+// Throws errors if it doesn't work
+async function uploadBlob(file: Blob, id: string): Promise<string> {
+    const blob = await put(id, file, { access: "private" });
+    const blobURL = blob.url;
+    return blobURL;
+}
+
+// Returns NULL on found service, string of service id on creation
+async function addOrUpdateService(service: {
     serviceName: string;
-    domainName: string;
     ownerId: string;
     lastUpdated: Date;
-    blobURL: string;
-}) {
+    file: Blob;
+}): Promise<string> {
     try {
-        // query to see if this doc exists already
         const servicesRef = adminDb.collection("services");
         const snapshot = await servicesRef
             .where("serviceName", "==", service.serviceName)
             .where("ownerId", "==", service.ownerId)
             .get();
 
-        // doc found
         if (!snapshot.empty) {
             const docRef = snapshot.docs[0].ref;
+
+            const blobURL = await uploadBlob(service.file, docRef.id);
+            if (blobURL == "") {
+                throw new Error("Blob upload failed");
+            }
+
             await docRef.update({
                 lastUpdated: service.lastUpdated,
-                blobURL: service.blobURL,
+                blobURL: blobURL,
             });
             return docRef.id;
         } else {
-            // create new doc
-            const docRef = await servicesRef.add({
+            const newDocRef = servicesRef.doc();
+            const newDocId = newDocRef.id;
+
+            const blobURL = await uploadBlob(service.file, newDocId);
+            if (blobURL == "") {
+                throw new Error("Blob upload failed");
+            }
+
+            const domainName = `${newDocId}.cloudramp.org`;
+            await newDocRef.set({
                 serviceName: service.serviceName,
-                domainName: service.domainName,
+                domainName: domainName,
                 ownerId: service.ownerId,
                 lastUpdated: service.lastUpdated,
-                blobURL: service.blobURL,
+                blobURL,
             });
 
-            // add service id to user's services array
+            // Add service to user's collection
             const userRef = adminDb.collection("users").doc(service.ownerId);
             await userRef.update({
-                services: FieldValue.arrayUnion(docRef.id),
+                services: FieldValue.arrayUnion(newDocId),
             });
 
-            return docRef.id;
+            return newDocId;
         }
     } catch (error) {
         console.error("Error adding/updating service in Firestore:", error);
@@ -85,29 +105,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
-    // send to vercel blob storage
-    let url = "testing url";
-    // try {
-    //     const blob = await put(uid + "-" + serviceName, file, { access: "private" });
-    //     url = blob.url;
-    // } catch (error) {
-    //     return NextResponse.json({ error: "Blob upload failed" }, { status: 500 });
-    // }
-
-    if (url == "") {
-        return NextResponse.json({ error: "Could not get blob URL" }, { status: 500 });
-    }
-
     try {
         await addOrUpdateService({
             serviceName: serviceName,
-            domainName: "a.cloudramp.com",
             ownerId: uid,
             lastUpdated: new Date(),
-            blobURL: url,
-        })
+            file,
+        });
     } catch {
-        return NextResponse.json({ error: "Failed to upload data to firestore" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to upload data" }, { status: 500 });
     }
 
     // You can now process the file and serviceName

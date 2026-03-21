@@ -54,8 +54,14 @@ export default function Dashboard() {
                     <Label>Your services</Label>
                     {loading ? (
                         <Loader type="dots" />
-                    ) : services.map((s: any) => 
-                        <ServiceItem name={s.serviceName} id={s.id} key={s.id} />
+                    ) : services.length > 0 ? (
+                        services.map((s: any) => 
+                            <ServiceItem name={s.serviceName} id={s.id} key={s.id} />
+                        )
+                    ) : (
+                        <div>
+                            No services
+                        </div>
                     )}
                 </VStack>
                 <VStack align="left">
