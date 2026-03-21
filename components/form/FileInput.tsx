@@ -16,7 +16,7 @@ export default function FileInput({ label, value, setValue, accept = ".wasm" }: 
             <Label>{label}</Label>
             <label
                 htmlFor={label}
-                className="w-full aspect-7/3 border-2 border-dashed border-outline rounded-lg flex items-center justify-center cursor-pointer transition hover:bg-outline-light/50"
+                className="w-full aspect-10/3 border-2 border-dashed border-outline rounded-lg flex items-center justify-center cursor-pointer transition hover:bg-outline-light/50"
             >
                 {value == null ? (
                     <div className="text-center">

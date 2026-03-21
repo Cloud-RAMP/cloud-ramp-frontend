@@ -4,7 +4,7 @@ import Heading from "@/components/text/Heading";
 
 export default function Home() {
     return (
-        <PageContainer className="gap-32 font-sans dark:bg-black square-bg">
+        <PageContainer className="gap-32 font-sans dark:bg-black" background="tilted-square">
             <VStack>
                 <Heading>Build WebSocket apps, scale fast, remove overhead</Heading>
                 <Heading className="font-bold">CloudRamp</Heading>
