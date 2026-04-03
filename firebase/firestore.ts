@@ -1,5 +1,5 @@
 import { app } from "./firebase";
-import { getFirestore, collection, setDoc, doc, query, where, getDocs, getDoc } from "firebase/firestore";
+import { getFirestore, collection, setDoc, doc, query, where, getDocs, getDoc, onSnapshot, Unsubscribe } from "firebase/firestore";
 
 const db = getFirestore(app);
 
@@ -41,4 +41,15 @@ export async function getUserServices(uid: string): Promise<any[]> {
     const services = await Promise.all(servicePromises);
 
     return services;
+}
+
+export function subscribeToServiceLogs(
+    serviceId: string,
+    callback: (logs: any[]) => void
+): Unsubscribe {
+    const logsColRef = collection(db, "services", serviceId, "logs");
+    return onSnapshot(logsColRef, (snapshot) => {
+        const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(logs);
+    });
 }
