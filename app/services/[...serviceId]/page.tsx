@@ -8,6 +8,7 @@ import { subscribeToServiceLogs } from '@/firebase/firestore';
 import Code from '@/components/text/Code';
 import Body from '@/components/text/Body';
 import Loader from '@/components/icons/Loader';
+import Button from '@/components/Button';
 
 export default function ServiceIdPage() {
   const params = useParams();
@@ -15,6 +16,7 @@ export default function ServiceIdPage() {
   const serviceId = Array.isArray(serviceIdParam) ? serviceIdParam[0] : String(serviceIdParam)
 
   const [logs, setLogs] = useState<string[]>([]);
+  const [numUsers, setNumUsers] = useState<number>(0);
 
   useEffect(() => {
     const unsub = subscribeToServiceLogs(serviceId, (firestoreLogs: any[]) => {
@@ -26,8 +28,23 @@ export default function ServiceIdPage() {
       setLogs(allLogs.reduce((acc: string[], cur: string[]) => acc.push(...cur)));
     });
 
+    // fetch current number of users
+    getUsers();
+
     return unsub;
   }, []);
+
+  async function getUsers() {
+    try {
+      const resp = await fetch(`/api/getUsers?instanceId=${serviceId}`);
+      const data = await resp.json();
+      if (data.users) {
+        setNumUsers(data.users)
+      }
+    } catch (e) {
+      console.log("Error fetching num users");
+    }
+  }
 
   function stringifyLog(log: any): string {
     let out = "";
@@ -48,7 +65,11 @@ export default function ServiceIdPage() {
             Your service
         </Heading>
         <Body>
-          info about it here
+          Current users: {numUsers}
+          <br />
+          <Button onClick={getUsers}>
+            Update
+          </Button>
         </Body>
         <Heading>
           Logs
