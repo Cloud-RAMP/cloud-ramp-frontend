@@ -5,6 +5,8 @@ import { useParams } from 'next/navigation';
 import Heading from '@/components/text/Heading';
 import { useEffect, useState } from 'react';
 import { subscribeToServiceLogs } from '@/firebase/firestore';
+import Code from '@/components/text/Code';
+import Body from '@/components/text/Body';
 
 export default function ServiceIdPage() {
   const params = useParams();
@@ -14,8 +16,13 @@ export default function ServiceIdPage() {
   const [logs, setLogs] = useState<string[]>([]);
 
   useEffect(() => {
-    const unsub = subscribeToServiceLogs(serviceId, (logs) => {
-      console.log(logs);
+    const unsub = subscribeToServiceLogs(serviceId, (firestoreLogs: any[]) => {
+      const allLogs = firestoreLogs.map((log: any) => {
+        const jsonStrings = log.content.split("\n").filter((j: string) => j != "");
+        return jsonStrings.map((j: string) => JSON.parse(j))
+      });
+      
+      setLogs(allLogs.reduce((acc: string[], cur: string[]) => acc.push(...cur)));
     });
 
     return unsub;
@@ -26,8 +33,19 @@ export default function ServiceIdPage() {
         <Heading>
             Your service
         </Heading>
-        <h1>Service ID Page</h1>
-        <p>Captured Slug: {serviceId}</p>
+        <Body>
+          info about it here
+        </Body>
+        <Heading>
+          Logs
+        </Heading>
+        <Code>
+          {logs.map((j: string, index: number) => (
+            <div key={`logs-${index}`} className='text-wrap align-left'>
+              {JSON.stringify(j)}
+            </div>
+          ))}
+        </Code>
     </PageContainer>
   );
 }
