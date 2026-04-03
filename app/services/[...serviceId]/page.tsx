@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { subscribeToServiceLogs } from '@/firebase/firestore';
 import Code from '@/components/text/Code';
 import Body from '@/components/text/Body';
+import Loader from '@/components/icons/Loader';
 
 export default function ServiceIdPage() {
   const params = useParams();
@@ -28,6 +29,19 @@ export default function ServiceIdPage() {
     return unsub;
   }, []);
 
+  function stringifyLog(log: any): string {
+    let out = "";
+    Object.keys(log).forEach((k: string) => {
+      if (k == "time") {
+        const time = new Date(log[k]);
+        out += `[${log[k]}] `;
+      } else {
+        out += `${k}=${log[k]} `
+      }
+    })
+    return out;
+  }
+
   return (
     <PageContainer>
         <Heading>
@@ -39,13 +53,17 @@ export default function ServiceIdPage() {
         <Heading>
           Logs
         </Heading>
-        <Code>
+        {logs.length != 0 ? (
+        <Code className="min-h-[25vh] h-[25vh] overflow-y-scroll p-2 resize-y">
           {logs.map((j: string, index: number) => (
             <div key={`logs-${index}`} className='text-wrap align-left'>
-              {JSON.stringify(j)}
+              {stringifyLog(j)}
             </div>
           ))}
         </Code>
+        ) : (
+          <Loader />
+        )}
     </PageContainer>
   );
 }
