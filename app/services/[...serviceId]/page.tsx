@@ -5,15 +5,21 @@ import { useParams } from 'next/navigation';
 import Heading from '@/components/text/Heading';
 import { useEffect, useState } from 'react';
 import { subscribeToServiceLogs } from '@/firebase/firestore';
-import Code from '@/components/text/Code';
 import Body from '@/components/text/Body';
-import Loader from '@/components/icons/Loader';
 import Button from '@/components/Button';
+import LogViewer from './Logs';
+import VStack from '@/components/layout/VStack';
+import HStack from '@/components/layout/HStack';
+import Subheading from '@/components/text/Subheading';
+import { useUser } from '@/contexts/UserContext';
+import { useRouter } from 'next/navigation';
 
 export default function ServiceIdPage() {
   const params = useParams();
   const serviceIdParam = params.serviceId;
   const serviceId = Array.isArray(serviceIdParam) ? serviceIdParam[0] : String(serviceIdParam)
+  const { user } = useUser();
+  const router = useRouter();
 
   const [logs, setLogs] = useState<string[]>([]);
   const [numUsers, setNumUsers] = useState<number>(0);
@@ -46,45 +52,91 @@ export default function ServiceIdPage() {
     }
   }
 
-  function stringifyLog(log: any): string {
-    let out = "";
-    Object.keys(log).forEach((k: string) => {
-      if (k == "time") {
-        const time = new Date(log[k]);
-        out += `[${log[k]}] `;
+  async function onDelete() {
+    const uid = user?.uid;
+    if (!uid) {
+      alert("User not authenticated");
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceId, uid }),
+      });
+      const data = await resp.json();
+      if (resp.ok) {
+        alert("Service deleted successfully!");
+        router.push('/dashboard');
+        // Optionally redirect or update UI here
       } else {
-        out += `${k}=${log[k]} `
+        alert(data.error || "Failed to delete service");
       }
-    })
-    return out;
+    } catch (e) {
+      alert("Network error while deleting service");
+    }
+  }
+
+  function onUpdate() {
+    router.push(`/upload?serviceId=${serviceId}`)
   }
 
   return (
     <PageContainer>
-        <Heading>
-            Your service
-        </Heading>
-        <Body>
-          Current users: {numUsers}
-          <br />
-          <Button onClick={getUsers}>
-            Update
-          </Button>
-        </Body>
-        <Heading>
-          Logs
-        </Heading>
-        {logs.length != 0 ? (
-        <Code className="min-h-[25vh] h-[25vh] overflow-y-scroll p-2 resize-y">
-          {logs.map((j: string, index: number) => (
-            <div key={`logs-${index}`} className='text-wrap align-left'>
-              {stringifyLog(j)}
-            </div>
-          ))}
-        </Code>
-        ) : (
-          <Loader />
-        )}
+        <VStack align='left' gap='gap-8' className='w-full'>
+          {/* introduction */}
+          <VStack className='pl-16 w-full' gap="gap-3" align='left'>
+            <Heading align='left'>
+              your service
+            </Heading>
+            <Body align='left'>
+              id: {serviceId}
+            </Body>
+            <Body align='left'>
+                here you can view details about your service, including logs and current viewers
+                <br />
+                you can also manage your service, mostly deletion and interacting in the playground
+            </Body>
+          </VStack>
+
+          <VStack className='w-full' align='left'>
+            <VStack className='pl-16' gap="gap-0">
+                <Subheading align='left'>
+                    settings
+                </Subheading>
+                <Body align='left'>
+                    modify the state of your application here. more configuration to come in future updates!
+                </Body>
+            </VStack>
+            <HStack className='w-full justify-evenly'>
+              <VStack gap="gap-1">
+                <Body align='left'>
+                  delete service
+                </Body>
+                <Button color='dark' onClick={onDelete}>
+                  delete
+                </Button>
+              </VStack>
+              <VStack gap="gap-1">
+                <Body align='left'>
+                  update service
+                </Body>
+                <Button color='dark' onClick={onUpdate}>
+                  update
+                </Button>
+              </VStack>
+            </HStack>
+          </VStack>
+          <Body>
+            Current users: {numUsers}
+            <br />
+            <Button onClick={getUsers}>
+              Update
+            </Button>
+          </Body>
+          <LogViewer logs={logs} />
+        </VStack>
     </PageContainer>
   );
 }
