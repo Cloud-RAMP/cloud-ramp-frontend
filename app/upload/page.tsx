@@ -10,13 +10,17 @@ import Heading from "@/components/text/Heading";
 import InvalidAuth from "@/components/views/InvalidAuth";
 import { useUser } from "@/contexts/UserContext";
 import { useServicesQuery } from "@/firebase/queries";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Upload() {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [serviceName, setServiceName] = useState("");
     const { user } = useUser();
     const { loading, services } = useServicesQuery(user);
+    const searchParams = useSearchParams();
+    const serviceId = searchParams.get('serviceId');
+    const router = useRouter();
 
     async function onSubmit() {
         if (!uploadedFile || serviceName == "" || user == null) {
@@ -37,8 +41,23 @@ export default function Upload() {
         });
         const data = await resp.json();
 
-        console.log(data);
+        if (data.message == "Upload successful!") {
+            router.push("/dashboard");
+        }
     }
+
+    // update service name immediately if they come to edit it
+    useEffect(() => {
+        if (!serviceId) {
+            return;
+        }
+
+        for (const s of services) {
+            if (s.id == serviceId) {
+                setServiceName(s.serviceName);
+            }
+        }
+    }, [searchParams, services]);
 
     if (user == null) {
         return <InvalidAuth />;
