@@ -53,3 +53,8 @@ export function subscribeToServiceLogs(
         callback(logs);
     });
 }
+
+export async function getServiceById(serviceId: string) {
+  const serviceDoc = await getDoc(doc(db, "services", serviceId));
+  return { id: serviceDoc.id, ...serviceDoc.data() };
+}
