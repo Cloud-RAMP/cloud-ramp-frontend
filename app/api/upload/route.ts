@@ -62,10 +62,8 @@ async function addOrUpdateService(service: {
                 throw new Error("Blob upload failed");
             }
 
-            const domainName = `${newDocId}.cloudramp.org`;
             await newDocRef.set({
                 serviceName: service.serviceName,
-                domainName: domainName,
                 ownerId: service.ownerId,
                 lastUpdated: service.lastUpdated,
                 blobURL,
