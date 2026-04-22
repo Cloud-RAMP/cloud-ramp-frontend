@@ -16,10 +16,9 @@ function stringifyLog(log: any): string {
   return out;
 }
 
-export default function LogViewer({ logs }: { logs: any[] }) {
-  if (!logs || logs.length === 0) return <Loader />;
+export default function LogViewer({ logs }: { logs: any[] }) {  
   return (
-    <VStack align='left'>
+    <VStack align='left' className="w-full">
         <VStack className='pl-16' gap="gap-0">
             <Subheading align='left'>
                 your logs
@@ -28,8 +27,13 @@ export default function LogViewer({ logs }: { logs: any[] }) {
                 logs are incrementally updated, so you may not see updates immediately
             </Body>
         </VStack>
-        {(!logs || logs.length == 0) ? (
+        {(!logs) ? (
             <Loader />
+        ) : logs.length == 0 ? (
+          <Body>
+            <br />
+            No logs yet, send some data in the playground!
+          </Body>
         ) : (
         <Code className="min-h-[25vh] h-[25vh] overflow-y-scroll p-2 resize-y">
           {logs.map((j: any, index: number) => (

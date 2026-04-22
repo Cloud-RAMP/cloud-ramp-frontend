@@ -17,7 +17,7 @@ export default function PageContainer({
         const bgClass = background + "-bg";
 
         return (
-            <div className="h-screen w-full">
+        <div className="h-screen w-full relative top-[-4em]">
                 <div className={`fixed inset-0 z-0 h-full w-full ${bgClass} fade-bottom`} />
                     
                 <VStack
@@ -31,7 +31,7 @@ export default function PageContainer({
     }
 
     return (
-        <VStack {...rest} className={`justify-center h-screen w-full pt-16 ${className}`}>
+        <VStack {...rest} className={`justify-center min-h-screen w-full pt-32 pb-16 ${className}`}>
             {children}
         </VStack>
     );

@@ -13,6 +13,10 @@ import HStack from '@/components/layout/HStack';
 import Subheading from '@/components/text/Subheading';
 import { useUser } from '@/contexts/UserContext';
 import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
+import { useServiceQuery } from '@/firebase/queries';
+import Playground from './Playground';
+import { fireErrorAlert, fireSuccessAlert } from '@/components/alerts';
 
 export default function ServiceIdPage() {
   const params = useParams();
@@ -20,9 +24,11 @@ export default function ServiceIdPage() {
   const serviceId = Array.isArray(serviceIdParam) ? serviceIdParam[0] : String(serviceIdParam)
   const { user } = useUser();
   const router = useRouter();
+  const { loading, service: serviceInfo, error } = useServiceQuery(serviceId);
 
   const [logs, setLogs] = useState<string[]>([]);
   const [numUsers, setNumUsers] = useState<number>(0);
+  const [inPlayground, setInPlayground] = useState<boolean>(false);
 
   useEffect(() => {
     const unsub = subscribeToServiceLogs(serviceId, (firestoreLogs: any[]) => {
@@ -31,7 +37,7 @@ export default function ServiceIdPage() {
         return jsonStrings.map((j: string) => JSON.parse(j))
       });
       
-      setLogs(allLogs.reduce((acc: string[], cur: string[]) => acc.push(...cur)));
+      setLogs(allLogs.length == 0 ? [] : allLogs.reduce((acc: string[], cur: string[]) => acc.push(...cur)));
     });
 
     // fetch current number of users
@@ -48,7 +54,7 @@ export default function ServiceIdPage() {
         setNumUsers(data.users)
       }
     } catch (e) {
-      console.log("Error fetching num users");
+      fireErrorAlert("Failed to fetch number of users");
     }
   }
 
@@ -56,6 +62,25 @@ export default function ServiceIdPage() {
     const uid = user?.uid;
     if (!uid) {
       alert("User not authenticated");
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "This will permanently delete your service.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#000000',
+      cancelButtonColor: '#ffffff',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'Cancel',
+      customClass: {
+        cancelButton: 'swal2-cancel-custom',
+        confirmButton: 'swal2-confirm-custom',
+      }
+    });
+
+    if (!result.isConfirmed) {
       return;
     }
 
@@ -67,14 +92,14 @@ export default function ServiceIdPage() {
       });
       const data = await resp.json();
       if (resp.ok) {
-        alert("Service deleted successfully!");
+        fireSuccessAlert("Service deleted");
         router.push('/dashboard');
         // Optionally redirect or update UI here
       } else {
-        alert(data.error || "Failed to delete service");
+        fireErrorAlert("Failed to delete service");
       }
     } catch (e) {
-      alert("Network error while deleting service");
+      fireErrorAlert("Failed to delete service");
     }
   }
 
@@ -84,11 +109,11 @@ export default function ServiceIdPage() {
 
   return (
     <PageContainer>
-        <VStack align='left' gap='gap-8' className='w-full'>
+        <VStack align='left' gap='gap-16' className='w-full' divided={true}>
           {/* introduction */}
           <VStack className='pl-16 w-full' gap="gap-3" align='left'>
             <Heading align='left'>
-              your service
+              your service{serviceInfo && ": " + serviceInfo.serviceName}
             </Heading>
             <Body align='left'>
               id: {serviceId}
@@ -103,6 +128,41 @@ export default function ServiceIdPage() {
           <VStack className='w-full' align='left'>
             <VStack className='pl-16' gap="gap-0">
                 <Subheading align='left'>
+                    playground
+                </Subheading>
+                <Body align='left'>
+                    send/receive live data from your application in the playground!
+                </Body>
+            </VStack>
+              <br />
+            <HStack className='w-full justify-center'>
+              {inPlayground ? (
+                <Playground serviceInfo={serviceInfo} />
+              ) : (
+                <VStack gap="gap-2">
+                  <Body align='left'>
+                    starting the playground will create a new WebSocket connection to your service
+                  </Body>
+                  <Button color='dark' onClick={() => setInPlayground(true)}>
+                    Join playground
+                  </Button>
+                </VStack>
+              )}
+            </HStack>
+
+          </VStack>
+          {/* <Body>
+            Current users: {numUsers}
+            <br />
+            <Button onClick={getUsers}>
+              Update
+            </Button>
+          </Body> */}
+          <LogViewer logs={logs} />
+
+          <VStack className='w-full' align='left'>
+            <VStack className='pl-16' gap="gap-0">
+                <Subheading align='left'>
                     settings
                 </Subheading>
                 <Body align='left'>
@@ -112,30 +172,22 @@ export default function ServiceIdPage() {
             <HStack className='w-full justify-evenly'>
               <VStack gap="gap-1">
                 <Body align='left'>
-                  delete service
+                  delete your service
                 </Body>
                 <Button color='dark' onClick={onDelete}>
-                  delete
+                  Delete
                 </Button>
               </VStack>
               <VStack gap="gap-1">
                 <Body align='left'>
-                  update service
+                  update your code
                 </Body>
                 <Button color='dark' onClick={onUpdate}>
-                  update
+                  Update
                 </Button>
               </VStack>
             </HStack>
           </VStack>
-          <Body>
-            Current users: {numUsers}
-            <br />
-            <Button onClick={getUsers}>
-              Update
-            </Button>
-          </Body>
-          <LogViewer logs={logs} />
         </VStack>
     </PageContainer>
   );

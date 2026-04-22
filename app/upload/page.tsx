@@ -12,6 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useServicesQuery } from "@/firebase/queries";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
+import { fireErrorAlert, fireSuccessAlert } from "@/components/alerts";
 
 export default function Upload() {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -23,26 +24,33 @@ export default function Upload() {
     const router = useRouter();
 
     async function onSubmit() {
-        if (!uploadedFile || serviceName == "" || user == null) {
-            // make some error here
-            return;
-        }
-
-        // send to backend to upload to external file stores
-        const formData = new FormData();
-        formData.append("file", uploadedFile);
-        formData.append("serviceName", serviceName);
-        formData.append("uid", user.uid);
-
-        const serverUrl = "/api/upload";
-        const resp = await fetch(serverUrl, {
-            method: "POST",
-            body: formData,
-        });
-        const data = await resp.json();
-
-        if (data.message == "Upload successful!") {
-            router.push("/dashboard");
+        try {
+            if (!uploadedFile || serviceName == "" || user == null) {
+                // make some error here
+                fireErrorAlert("Missing required fields!");
+                return;
+            }
+    
+            // send to backend to upload to external file stores
+            const formData = new FormData();
+            formData.append("file", uploadedFile);
+            formData.append("serviceName", serviceName);
+            formData.append("uid", user.uid);
+    
+            const serverUrl = "/api/upload";
+            const resp = await fetch(serverUrl, {
+                method: "POST",
+                body: formData,
+            });
+            const data = await resp.json();
+    
+            if (data.message == "Upload successful!") {
+                fireSuccessAlert("Upload successful!");
+                router.push("/dashboard");
+            }
+        } catch (e) {
+            console.error(e);
+            fireErrorAlert("Failed to upload service!");
         }
     }
 
