@@ -1,8 +1,7 @@
-type HeadingProps = {
-    children: React.ReactNode;
-    className?: string;
-};
+import { type TextBlockProps, TextBlock } from "./TextBlock";
 
-export default function Body({ children, className = "" }: HeadingProps) {
-    return <div className={`w-full text-center ${className}`}>{children}</div>;
+export default function Body(props: TextBlockProps) {
+    return (
+        <TextBlock {...props} className={`${props.className || ""}`} />
+    );
 }
