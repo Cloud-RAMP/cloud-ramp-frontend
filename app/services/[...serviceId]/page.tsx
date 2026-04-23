@@ -15,7 +15,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { useServiceQuery } from '@/firebase/queries';
-import Playground from './Playground';
+import PlaygroundWrapper from './PlaygroundWrapper';
 import { fireErrorAlert, fireSuccessAlert } from '@/components/alerts';
 
 export default function ServiceIdPage() {
@@ -109,7 +109,7 @@ export default function ServiceIdPage() {
 
   return (
     <PageContainer>
-        <VStack align='left' gap='gap-16' className='w-full' divided={true}>
+        <VStack align='left' gap='gap-8' className='w-full' divided={true}>
           {/* introduction */}
           <VStack className='pl-16 w-full' gap="gap-3" align='left'>
             <Heading align='left'>
@@ -134,10 +134,9 @@ export default function ServiceIdPage() {
                     send/receive live data from your application in the playground!
                 </Body>
             </VStack>
-              <br />
             <HStack className='w-full justify-center'>
               {inPlayground ? (
-                <Playground serviceInfo={serviceInfo} />
+                <PlaygroundWrapper serviceInfo={serviceInfo} />
               ) : (
                 <VStack gap="gap-2">
                   <Body align='left'>
