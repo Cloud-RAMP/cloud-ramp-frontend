@@ -11,7 +11,7 @@ type PlaygroundWrapperProps = {
 
 export default function PlaygroundWrapper({ serviceInfo }: PlaygroundWrapperProps) {
     const [roomBuffer, setRoomBuffer] = useState<string>("");
-    const [room, setRoom] = useState<string>("");
+    const [room, setRoom] = useState<string>("a");
 
     if (!serviceInfo) {
         return <Loader />

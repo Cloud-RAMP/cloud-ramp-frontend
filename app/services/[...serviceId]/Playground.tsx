@@ -21,17 +21,9 @@ export default function Playground({ serviceInfo, roomName }: PlaygroundProps) {
     let [messageBoxVal, setMessageBoxVal] = useState<string>("");
     const socketRef = useRef<WebSocket | null>(null);
 
-    function onInput(ev: any) {
-        if (ev.key == "Enter") {
-            onSend();
-            return;
-        }
-        setMessageBoxVal(ev.target.value);
-    }
-
     function onSend() {
         if (socketRef.current) {
-            if (socketRef.current.CLOSED || socketRef.current.CLOSING) {
+            if (socketRef.current.readyState !== WebSocket.OPEN) {
                 fireErrorAlert("Socket closed, cannot send message");
                 return;
             }
@@ -48,17 +40,33 @@ export default function Playground({ serviceInfo, roomName }: PlaygroundProps) {
     }
 
     useEffect(() => {
+        let isCurrent = true;
         const socket = new WebSocket(fullURL);
-        socketRef.current = socket;
+
+        socket.onopen = () => {
+            if (isCurrent) socketRef.current = socket;
+        };
 
         socket.onmessage = (ev: MessageEvent) => {
+            if (!isCurrent) return;
             setAllMessages(prev => [...prev, ev.data]);
         };
 
+        socket.onerror = (err) => {
+            console.error("WebSocket error", err);
+        };
+
+        socket.onclose = () => {
+            if (isCurrent) socketRef.current = null;
+        };
+
         return () => {
+            isCurrent = false;
+            socketRef.current = null;
             socket.close();
         };
-    }, [fullURL]);
+    }, []);
+
 
     if (!serviceInfo || !serviceInfo.id) {
         return (
@@ -72,10 +80,17 @@ export default function Playground({ serviceInfo, roomName }: PlaygroundProps) {
         <HStack className="w-full justify-evenly px-16 items-start">
             <VStack className="min-w-54 h-full" gap="gap-1">
                 <Bold align="left">send messages</Bold>
-                <textarea 
-                    id="playground-message-sender" 
-                    className="bg-outline/10 w-full border-outline border min-h-32 p-2" 
-                    onKeyDown={onInput}
+                <textarea
+                    id="playground-message-sender"
+                    className="bg-outline/10 w-full border-outline border min-h-32 p-2"
+                    value={messageBoxVal}
+                    onChange={e => setMessageBoxVal(e.target.value)}
+                    onKeyDown={e => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            onSend();
+                        }
+                    }}
                 />
                 <Button color="dark" className="px-6" onClick={onSend}>
                     Send
@@ -84,8 +99,8 @@ export default function Playground({ serviceInfo, roomName }: PlaygroundProps) {
             <VStack className="w-full h-full" gap="gap-1">
                 <Bold align="left">incoming messages</Bold>
                 <Code className="min-h-32 max-h-128 h-full w-full overflow-y-scroll text-wrap overflow-x-hidden flex-1 p-2">
-                    {allMessages.map(msg => (
-                        <div>
+                    {allMessages.map((msg, idx) => (
+                        <div key={`server-message-${idx}`}>
                             {msg}
                         </div>
                     ))}
