@@ -15,8 +15,9 @@ import { useUser } from '@/contexts/UserContext';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { useServiceQuery } from '@/firebase/queries';
-import PlaygroundWrapper from './PlaygroundWrapper';
 import { fireErrorAlert, fireSuccessAlert } from '@/components/alerts';
+import TextInput from '@/components/form/TextInput';
+import Playground from './Playground';
 
 export default function ServiceIdPage() {
   const params = useParams();
@@ -27,8 +28,10 @@ export default function ServiceIdPage() {
   const { loading, service: serviceInfo, error } = useServiceQuery(serviceId);
 
   const [logs, setLogs] = useState<string[]>([]);
+
   const [numUsers, setNumUsers] = useState<number>(0);
-  const [inPlayground, setInPlayground] = useState<boolean>(false);
+  const [roomBuffer, setRoomBuffer] = useState<string>("");
+  const [room, setRoom] = useState<string>("");
 
   useEffect(() => {
     const unsub = subscribeToServiceLogs(serviceId, (firestoreLogs: any[]) => {
@@ -126,26 +129,31 @@ export default function ServiceIdPage() {
           </VStack>
 
           <VStack className='w-full' align='left'>
-            <VStack className='pl-16' gap="gap-0">
-                <Subheading align='left'>
-                    playground
-                </Subheading>
-                <Body align='left'>
-                    send/receive live data from your application in the playground!
-                </Body>
-            </VStack>
-            <HStack className='w-full justify-center'>
-              {inPlayground ? (
-                <PlaygroundWrapper serviceInfo={serviceInfo} />
-              ) : (
-                <VStack gap="gap-2">
+            <HStack className='w-full'>
+              <VStack className='pl-16 flex-1' gap="gap-0">
+                  <Subheading align='left'>
+                      playground
+                  </Subheading>
                   <Body align='left'>
-                    starting the playground will create a new WebSocket connection to your service
+                      send/receive live data from your application in the playground!
                   </Body>
-                  <Button color='dark' onClick={() => setInPlayground(true)}>
+              </VStack>
+              {(room != "" ) && (
+                <Button className='flex-0 mr-16' color='dark' onClick={() => setRoom("")}>
+                  Leave
+                </Button>
+              )}
+            </HStack>
+            <HStack className='w-full justify-center'>
+              {room == "" ? (
+                <VStack>
+                  <TextInput label="room name" value={roomBuffer} setValue={setRoomBuffer}/>
+                  <Button color="dark" onClick={() => setRoom(roomBuffer)}>
                     Join playground
                   </Button>
                 </VStack>
+              ) : (
+                <Playground serviceInfo={serviceInfo} roomName={room} />
               )}
             </HStack>
 
