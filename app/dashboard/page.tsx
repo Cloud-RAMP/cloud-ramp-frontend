@@ -1,14 +1,15 @@
 "use client";
 
+import { fireErrorAlert } from "@/components/alerts";
 import Button from "@/components/Button";
 import Loader from "@/components/icons/Loader";
 import HStack from "@/components/layout/HStack";
 import PageContainer from "@/components/layout/PageContainer";
 import VStack from "@/components/layout/VStack";
+import Body from "@/components/text/Body";
 import Label from "@/components/text/Label";
 import InvalidAuth from "@/components/views/InvalidAuth";
 import { useUser } from "@/contexts/UserContext";
-import { getUserServices } from "@/firebase/firestore";
 import { useServicesQuery } from "@/firebase/queries";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -20,7 +21,7 @@ type ServiceItemProps = {
 
 function ServiceItem({ name, id }: ServiceItemProps) {
     const router = useRouter();
-    const [gap, setGap] = useState("gap-2");
+    const [left, setLeft] = useState("left-2");
 
     return (
         <div
@@ -28,12 +29,12 @@ function ServiceItem({ name, id }: ServiceItemProps) {
             onClick={() => {
                 router.push(`/services/${id}`);
             }}
-            onMouseOver={() => setGap("gap-4")}
-            onMouseOut={() => setGap("gap-2")}
+            onMouseOver={() => setLeft("left-4")}
+            onMouseOut={() => setLeft("left-2")}
         >
-            <HStack className="transition-all" gap={gap}>
+            <HStack className="transition-all">
                 <span>{name}</span>
-                <span>→</span>
+                <span className={`relative ${left} transition-all`}>→</span>
             </HStack>
         </div>
     );
@@ -42,15 +43,15 @@ export default function Dashboard() {
     const router = useRouter();
     const { user } = useUser();
     const { loading, services } = useServicesQuery(user);
-
+    
     if (user == null) {
         return <InvalidAuth />
     }
 
     return (
         <PageContainer>
-            <HStack divided={true} dividerClassName="py-12" gap="gap-8">
-                <VStack align="left">
+            <HStack divided={true} dividerClassName="py-12" gap="gap-10">
+                <VStack align="left" className="pr-8">
                     <Label>Your services</Label>
                     {loading ? (
                         <Loader type="dots" />
@@ -65,7 +66,6 @@ export default function Dashboard() {
                     )}
                 </VStack>
                 <VStack align="left">
-                    probably put navigation to app insights and new app page
                     <Button
                         color="dark"
                         onClick={() => {

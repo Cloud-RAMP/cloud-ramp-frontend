@@ -10,15 +10,15 @@ import Heading from "@/components/text/Heading";
 import InvalidAuth from "@/components/views/InvalidAuth";
 import { useUser } from "@/contexts/UserContext";
 import { useServicesQuery } from "@/firebase/queries";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fireErrorAlert, fireSuccessAlert } from "@/components/alerts";
 
-export default function Upload() {
+function UploadContent() {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [serviceName, setServiceName] = useState("");
     const { user } = useUser();
-    const { loading, services } = useServicesQuery(user);
+    const { services } = useServicesQuery(user);
     const searchParams = useSearchParams();
     const serviceId = searchParams.get('serviceId');
     const router = useRouter();
@@ -99,5 +99,13 @@ export default function Upload() {
                 Submit
             </Button>
         </PageContainer>
+    );
+}
+
+export default function Upload() {
+    return (
+        <Suspense>
+            <UploadContent />
+        </Suspense>
     );
 }
