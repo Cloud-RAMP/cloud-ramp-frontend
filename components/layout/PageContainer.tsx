@@ -18,11 +18,11 @@ export default function PageContainer({
 
         return (
         <div className="h-screen w-full relative top-[-4em]">
-                <div className={`fixed inset-0 z-0 h-full w-full ${bgClass} fade-bottom`} />
+                <div className={`fixed inset-0 z-0 h-full w-full top-32 ${bgClass} fade-bottom`} />
                     
                 <VStack
                     {...rest}
-                    className={`absolute left-0 top-16 py-8 z-10 w-full min-h-screen justify-center ${className}`}
+                    className={`absolute left-0 top-24 py-8 z-10 w-full min-h-screen justify-center ${className}`}
                 >
                     {children}
                 </VStack>

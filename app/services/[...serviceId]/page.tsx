@@ -111,8 +111,8 @@ export default function ServiceIdPage() {
   }
 
   return (
-    <PageContainer>
-        <VStack align='left' gap='gap-8' className='w-full' divided={true}>
+    <PageContainer background="tilted-square">
+        <VStack align='left' gap='gap-8' className='w-full pt-16' divided={true}>
           {/* introduction */}
           <VStack className='pl-16 w-full' gap="gap-3" align='left'>
             <Heading align='left'>
@@ -128,6 +128,7 @@ export default function ServiceIdPage() {
             </Body>
           </VStack>
 
+          {/* playground */}
           <VStack className='w-full' align='left'>
             <HStack className='w-full'>
               <VStack className='pl-16 flex-1' gap="gap-0">
@@ -156,17 +157,12 @@ export default function ServiceIdPage() {
                 <Playground serviceInfo={serviceInfo} roomName={room} />
               )}
             </HStack>
-
           </VStack>
-          {/* <Body>
-            Current users: {numUsers}
-            <br />
-            <Button onClick={getUsers}>
-              Update
-            </Button>
-          </Body> */}
+
+          {/* logs */}
           <LogViewer logs={logs} />
 
+          {/* settings */}
           <VStack className='w-full' align='left'>
             <VStack className='pl-16' gap="gap-0">
                 <Subheading align='left'>

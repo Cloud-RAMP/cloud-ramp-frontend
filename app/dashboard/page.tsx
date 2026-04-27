@@ -49,7 +49,7 @@ export default function Dashboard() {
     }
 
     return (
-        <PageContainer>
+        <PageContainer background="square">
             <HStack divided={true} dividerClassName="py-12" gap="gap-10">
                 <VStack align="left" className="pr-8">
                     <Label>Your services</Label>
