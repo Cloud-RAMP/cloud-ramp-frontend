@@ -40,7 +40,14 @@ export default function ServiceIdPage() {
         return jsonStrings.map((j: string) => JSON.parse(j))
       });
       
-      setLogs(allLogs.length == 0 ? [] : allLogs.reduce((acc: string[], cur: string[]) => acc.push(...cur)));
+      setLogs(allLogs.length == 0 ? [] : allLogs.reduce((acc: string[], cur: string[]) => {
+        if (acc) {
+          acc.push(...cur);
+          return acc;
+        } else {
+          return [];
+        }
+      }));
     });
 
     // fetch current number of users
