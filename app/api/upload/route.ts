@@ -21,7 +21,7 @@ async function doesUserExist(uid: string): Promise<boolean> {
 // Uploads a blob to vercel and returns the URL.
 // Throws errors if it doesn't work
 async function uploadBlob(file: Blob, id: string): Promise<string> {
-    const blob = await put(id, file, { access: "private" });
+    const blob = await put(id, file, { access: "private", allowOverwrite: true });
     const blobURL = blob.url;
     return blobURL;
 }
