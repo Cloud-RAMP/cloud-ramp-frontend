@@ -44,9 +44,9 @@ export default function BillingViewer({ billing }: { billing: any | null }) {
   return (
     <VStack align="left" className="w-full">
       <VStack className="pl-16" gap="gap-0">
-        <Subheading align="left">your billing</Subheading>
+        <Subheading align="left">your metrics</Subheading>
         <Body align="left">
-          billing data is flushed periodically and may not reflect recent activity. new changes will be seen live here
+          metric data is flushed periodically and may not reflect recent activity. new changes will be seen live here
         </Body>
       </VStack>
 
