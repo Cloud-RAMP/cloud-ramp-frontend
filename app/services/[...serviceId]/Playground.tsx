@@ -12,7 +12,8 @@ type PlaygroundProps = {
     roomName: string
 }
 
-const BACKEND_URL = "ws://backend.cloudramp.org:8080";
+// const BACKEND_URL = "wss://backend.cloudramp.org:8080";
+const BACKEND_URL = "wss://cloud-ramp-578278759386.us-central1.run.app";
 
 export default function Playground({ serviceInfo, roomName }: PlaygroundProps) {
     const fullURL = `${BACKEND_URL}/${serviceInfo.id}/${roomName}`;
