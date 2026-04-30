@@ -54,6 +54,50 @@ export function subscribeToServiceLogs(
     });
 }
 
+export function subscribeToServiceBilling(
+    serviceId: string,
+    callback: (billing: any | null) => void
+): Unsubscribe {
+    const billingColRef = collection(db, "services", serviceId, "billing");
+    return onSnapshot(billingColRef, (snapshot) => {
+        if (snapshot.empty) {
+            callback(null);
+            return;
+        }
+
+        const totals: any = {
+            redisReads:          0,
+            redisWrites:         0,
+            redisPublishes:      0,
+            firestoreReads:      0,
+            firestoreWrites:     0,
+            firestoreReadBytes:  0,
+            firestoreWriteBytes: 0,
+            outboundFetches:     0,
+            outboundFetchBytes:  0,
+            inboundRequests:     0,
+            outboundBytes:       0,
+        };
+
+        snapshot.docs.forEach((doc) => {
+            const d = doc.data();
+            totals.redisReads          += d.redisReads          ?? 0;
+            totals.redisWrites         += d.redisWrites         ?? 0;
+            totals.redisPublishes      += d.redisPublishes      ?? 0;
+            totals.firestoreReads      += d.firestoreReads      ?? 0;
+            totals.firestoreWrites     += d.firestoreWrites     ?? 0;
+            totals.firestoreReadBytes  += d.firestoreReadBytes  ?? 0;
+            totals.firestoreWriteBytes += d.firestoreWriteBytes ?? 0;
+            totals.outboundFetches     += d.outboundFetches     ?? 0;
+            totals.outboundFetchBytes  += d.outboundFetchBytes  ?? 0;
+            totals.inboundRequests     += d.inboundRequests     ?? 0;
+            totals.outboundBytes       += d.outboundBytes       ?? 0;
+        });
+
+        callback(totals);
+    });
+}
+
 export async function getServiceById(serviceId: string) {
   const serviceDoc = await getDoc(doc(db, "services", serviceId));
   return { id: serviceDoc.id, ...serviceDoc.data() };

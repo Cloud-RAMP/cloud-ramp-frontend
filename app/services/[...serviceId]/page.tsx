@@ -4,7 +4,7 @@ import PageContainer from '@/components/layout/PageContainer';
 import { useParams } from 'next/navigation';
 import Heading from '@/components/text/Heading';
 import { useEffect, useState } from 'react';
-import { subscribeToServiceLogs } from '@/firebase/firestore';
+import { subscribeToServiceBilling, subscribeToServiceLogs } from '@/firebase/firestore';
 import Body from '@/components/text/Body';
 import Button from '@/components/Button';
 import LogViewer from './Logs';
@@ -18,6 +18,7 @@ import { useServiceQuery } from '@/firebase/queries';
 import { fireErrorAlert, fireSuccessAlert } from '@/components/alerts';
 import TextInput from '@/components/form/TextInput';
 import Playground from './Playground';
+import BillingViewer from './Billing';
 
 export default function ServiceIdPage() {
   const params = useParams();
@@ -28,32 +29,39 @@ export default function ServiceIdPage() {
   const { loading, service: serviceInfo, error } = useServiceQuery(serviceId);
 
   const [logs, setLogs] = useState<string[]>([]);
+  const [billing, setBilling] = useState<any[]>([]);
 
   const [numUsers, setNumUsers] = useState<number>(0);
   const [roomBuffer, setRoomBuffer] = useState<string>("");
   const [room, setRoom] = useState<string>("");
 
   useEffect(() => {
-    const unsub = subscribeToServiceLogs(serviceId, (firestoreLogs: any[]) => {
-      const allLogs = firestoreLogs.map((log: any) => {
-        const jsonStrings = log.content.split("\n").filter((j: string) => j != "");
-        return jsonStrings.map((j: string) => JSON.parse(j))
+      const unsub = subscribeToServiceLogs(serviceId, (firestoreLogs: any[]) => {
+          const allLogs = firestoreLogs.map((log: any) => {
+              const jsonStrings = log.content.split("\n").filter((j: string) => j != "");
+              return jsonStrings.map((j: string) => JSON.parse(j));
+          });
+
+          setLogs(allLogs.length == 0 ? [] : allLogs.reduce((acc: string[], cur: string[]) => {
+              if (acc) {
+                  acc.push(...cur);
+                  return acc;
+              } else {
+                  return [];
+              }
+          }));
       });
-      
-      setLogs(allLogs.length == 0 ? [] : allLogs.reduce((acc: string[], cur: string[]) => {
-        if (acc) {
-          acc.push(...cur);
-          return acc;
-        } else {
-          return [];
-        }
-      }));
-    });
 
-    // fetch current number of users
-    getUsers();
+      const unsubBilling = subscribeToServiceBilling(serviceId, (billing: any | null) => {
+          setBilling(billing);
+      });
 
-    return unsub;
+      getUsers();
+
+      return () => {
+          unsub();
+          unsubBilling();
+      };
   }, []);
 
   async function getUsers() {
@@ -168,6 +176,8 @@ export default function ServiceIdPage() {
 
           {/* logs */}
           <LogViewer logs={logs} />
+
+          <BillingViewer billing={billing} />
 
           {/* settings */}
           <VStack className='w-full' align='left'>

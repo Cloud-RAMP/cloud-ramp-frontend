@@ -98,9 +98,9 @@ export default function Playground({ serviceInfo, roomName }: PlaygroundProps) {
             </VStack>
             <VStack className="w-full h-full" gap="gap-1">
                 <Bold align="left">incoming messages</Bold>
-                <Code className="min-h-32 max-h-128 h-full w-full overflow-y-scroll text-wrap overflow-x-hidden flex-1 p-2">
+                <Code className="min-h-32 max-h-128 h-full w-full max-w-full overflow-y-scroll text-wrap overflow-x-hidden flex-1 p-2">
                     {allMessages.map((msg, idx) => (
-                        <div key={`server-message-${idx}`}>
+                        <div key={`server-message-${idx}`} className="text-wrap">
                             {msg}
                         </div>
                     ))}

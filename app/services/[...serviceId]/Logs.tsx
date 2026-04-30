@@ -17,6 +17,7 @@ function stringifyLog(log: any): string {
 }
 
 export default function LogViewer({ logs }: { logs: any[] }) {  
+  console.log(logs);
   return (
     <VStack align='left' className="w-full">
         <VStack className='pl-16' gap="gap-0">
@@ -35,8 +36,10 @@ export default function LogViewer({ logs }: { logs: any[] }) {
             No logs yet, send some data in the playground!
           </Body>
         ) : (
-        <Code className="min-h-[25vh] h-[25vh] overflow-y-scroll p-2 resize-y">
-          {logs.map((j: any, index: number) => (
+        <Code className="min-h-[25vh] h-[25vh] overflow-y-scroll p-2 resize-y max-w-full">
+          {logs.sort((a: any, b: any) => {
+            return new Date(b.time).getTime() - new Date(a.time).getTime();
+          }).map((j: any, index: number) => (
             <div key={`logs-${index}`} className='text-wrap align-left'>
               {stringifyLog(j)}
             </div>
