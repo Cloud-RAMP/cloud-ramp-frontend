@@ -10,6 +10,9 @@ function formatBytes(bytes: number): string {
 }
 
 function formatCount(n: number): string {
+  if (!n) {
+    return "0";
+  }
   return n.toLocaleString();
 }
 
