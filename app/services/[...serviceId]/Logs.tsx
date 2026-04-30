@@ -17,7 +17,6 @@ function stringifyLog(log: any): string {
 }
 
 export default function LogViewer({ logs }: { logs: any[] }) {  
-  console.log(logs);
   return (
     <VStack align='left' className="w-full">
         <VStack className='pl-16' gap="gap-0">

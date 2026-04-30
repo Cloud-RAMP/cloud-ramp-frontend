@@ -2,6 +2,7 @@ import VStack from '@/components/layout/VStack';
 import Subheading from '@/components/text/Subheading';
 import Body from '@/components/text/Body';
 import Loader from '@/components/icons/Loader';
+import { useEffect, useState } from 'react';
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -43,7 +44,32 @@ function BillingSection({ title, children }: { title: string; children: React.Re
   );
 }
 
+const DEFAULT_BILLING = {
+  inboundRequests: 0,
+  outboundBytes: 0,
+  redisReads: 0,
+  redisWrites: 0,
+  redisPublishes: 0,
+  firestoreReads: 0,
+  firestoreReadBytes: 0,
+  firestoreWrites: 0,
+  firestoreWriteBytes: 0,
+  outboundFetches: 0,
+  outboundFetchBytes: 0,
+};
+const LOADER_TIMEOUT_MS = 1000;
+
 export default function BillingViewer({ billing }: { billing: any | null }) {
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    if (billing !== null) return;
+    const t = setTimeout(() => setTimedOut(true), LOADER_TIMEOUT_MS);
+    return () => clearTimeout(t);
+  }, [billing]);
+
+  const safeBilling = billing ?? (timedOut ? DEFAULT_BILLING : null);
+
   return (
     <VStack align="left" className="w-full">
       <VStack className="pl-16" gap="gap-0">
@@ -53,39 +79,39 @@ export default function BillingViewer({ billing }: { billing: any | null }) {
         </Body>
       </VStack>
 
-      {!billing ? (
+      {safeBilling == null ? (
         <Loader />
       ) : (
         <div className="pl-16 grid grid-cols-2 gap-x-16 gap-y-6">
           <BillingSection title="WebSockets">
-            <BillingTile label="inbound requests" value={formatCount(billing.inboundRequests)} />
-            <BillingTile label="outbound bytes" value={formatBytes(billing.outboundBytes)} />
+            <BillingTile label="inbound requests" value={formatCount(safeBilling.inboundRequests)} />
+            <BillingTile label="outbound bytes" value={formatBytes(safeBilling.outboundBytes)} />
           </BillingSection>
 
           <BillingSection title="Redis">
-            <BillingTile label="reads" value={formatCount(billing.redisReads)} />
-            <BillingTile label="writes" value={formatCount(billing.redisWrites)} />
-            <BillingTile label="publishes" value={formatCount(billing.redisPublishes)} />
+            <BillingTile label="reads" value={formatCount(safeBilling.redisReads)} />
+            <BillingTile label="writes" value={formatCount(safeBilling.redisWrites)} />
+            <BillingTile label="publishes" value={formatCount(safeBilling.redisPublishes)} />
           </BillingSection>
 
           <BillingSection title="Firestore">
             <BillingTile
               label="reads"
-              value={formatCount(billing.firestoreReads)}
-              sub={formatBytes(billing.firestoreReadBytes)}
+              value={formatCount(safeBilling.firestoreReads)}
+              sub={formatBytes(safeBilling.firestoreReadBytes)}
             />
             <BillingTile
               label="writes"
-              value={formatCount(billing.firestoreWrites)}
-              sub={formatBytes(billing.firestoreWriteBytes)}
+              value={formatCount(safeBilling.firestoreWrites)}
+              sub={formatBytes(safeBilling.firestoreWriteBytes)}
             />
           </BillingSection>
 
           <BillingSection title="HTTP">
             <BillingTile
               label="outbound fetches"
-              value={formatCount(billing.outboundFetches)}
-              sub={formatBytes(billing.outboundFetchBytes)}
+              value={formatCount(safeBilling.outboundFetches)}
+              sub={formatBytes(safeBilling.outboundFetchBytes)}
             />
           </BillingSection>
         </div>
